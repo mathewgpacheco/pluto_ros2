@@ -19,7 +19,7 @@ class MyPublisherNode(Node):
 
         self.movement_publisher_ = self.create_publisher(TargetMove,"/target_move",10)
         # Change every x seconds
-        self.timer_ = self.create_timer(1, self.publish_move)
+        self.timer_ = self.create_timer(0.1, self.publish_move)
         self.action = "forward"
 
     
@@ -29,6 +29,7 @@ class MyPublisherNode(Node):
         msg = TargetMove()
         msg.twst.linear.x = 1.0
         msg.twst.angular.z = 2.0
+        msg.data = self.action
         self.movement_publisher_.publish(msg)
         self.get_logger().info("Sending a command now " + str(msg))
 

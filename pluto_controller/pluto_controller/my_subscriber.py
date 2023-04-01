@@ -20,23 +20,23 @@ class MySubscriberNode(Node):
         #subscribe to movement actions commands
         self.movement_subscriber_ = self.create_subscription(TargetMove, "/target_move", self.listener_callback,10)
 
-        self.movement_status_subscriber = self.create_subscription(WheelStatus,"/wheel_status",self.status_listener_callback,10)
-        self.movement_velocity_subscriber = self.create_subscription(WheelVels,"/wheel_vels",self.status_listener_callback,10)
-    def status_listener_callback(self,msg):
-        status = WheelStatus()
-        velocity = WheelVels()
+        self.movement_velocity_publisher_ = self.create_publisher(WheelVels,"/wheel_vels", 10)
+        self.timer_ = self.create_timer(10, self.timer_callback)
+        
+    def timer_callback(self):
+        msg = WheelVels()
 
-        velocity = msg.velocity
-        status = msg.status
-        self.get_logger().info("Pluto wheels_enabled: " + str(status.wheels_enabled))
-        self.get_logger().info("Pluto pwm left/right: " + str(status.pwm_left) + " : " + str(status.pwm_right))
-        self.get_logger().info("Pluto velocity left/right " + str(velocity.velocity_left) + " : " + str(velocity.velocity_right))
+        msg.velocity_left = 2.0
+        msg.velocity_right = 2.0
+        self.movement_velocity_publisher_.publish(msg)
+        self.get_logger().info("Pluto velocity left/right " + str(msg.velocity_left) + " : " + str(msg.velocity_right))
+
 
     def listener_callback(self,msg):
         payload = msg.data
         move = Twist()
         move = msg.twst
-        self.get_logger().info("Message recieved...moving " + str(move))
+        self.get_logger().info("Message recieved...moving ")
         self.cmd_move_pub.publish(move)
 def main(args=None):
     rclpy.init(args=args)
