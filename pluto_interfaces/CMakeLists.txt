@@ -11,8 +11,8 @@ find_package(irobot_create_msgs REQUIRED)
 find_package(rosidl_default_generators REQUIRED)
 
 rosidl_generate_interfaces(${PROJECT_NAME}
-  "msg/TargetLight.msg"
   "msg/TargetMove.msg"
+  "msg/DetectSensors.msg"
   DEPENDENCIES irobot_create_msgs
 )
 

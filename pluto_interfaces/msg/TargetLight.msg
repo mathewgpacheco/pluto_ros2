@@ -1,2 +1,0 @@
-string data
-irobot_create_msgs/LightringLeds lights

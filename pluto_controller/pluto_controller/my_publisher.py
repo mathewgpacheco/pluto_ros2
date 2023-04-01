@@ -1,30 +1,27 @@
 #!/usr/bin/env python3
 import rclpy
 from rclpy.node import Node
-from pluto_interfaces.msg import TargetLight
 from pluto_interfaces.msg import TargetMove
-from geometry_msgs.msg import Twist
-from irobot_create_msgs.msg import WheelVels
-from irobot_create_msgs.msg import WheelTicks
-from irobot_create_msgs.msg import WheelStatus
-
+from pluto_interfaces.msg import DetectSensors
 
 class MyPublisherNode(Node):
 
     def __init__(self):
         super().__init__("my_publisher")
-
-        #Message class, Name of topic, Queue message size
-        self.publisher_ = self.create_publisher(TargetLight, "topic",10)
-
-        self.movement_publisher_ = self.create_publisher(TargetMove,"/target_move",10)
-        # Change every x seconds
-        self.timer_ = self.create_timer(0.1, self.publish_move)
-        self.action = "forward"
-
-    
- 
         
+        self.movement_publisher_ = self.create_publisher(TargetMove,"/target_move",10)
+        self.detect_subscriber_ = self.create_subscription(DetectSensors, "/detect_sensors",self.listener_callback,10)
+    
+    def listener_callback(self,msg):
+        if msg.buttons.button_1.is_pressed:
+            btn_pressed = "left"
+            self.get_logger().info("Button press: " + btn_pressed)
+        if msg.buttons.button_2.is_pressed:
+            btn_pressed = "right"
+            self.get_logger().info("Button press: " + btn_pressed)
+        else:
+            self.get_logger().info("Button press: None")
+
     def publish_move(self):
         msg = TargetMove()
         msg.twst.linear.x = 1.0
