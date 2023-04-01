@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import rclpy
 from rclpy.node import Node
+from rclpy.qos import qos_profile_sensor_data
 from irobot_create_msgs.msg import InterfaceButtons
 from geometry_msgs.msg import Twist
 from pluto_interfaces.msg import TargetMove
@@ -16,7 +17,7 @@ class MySubscriberNode(Node):
         self.cmd_move_pub = self.create_publisher(Twist,"/cmd_vel",10)
 
         #subscribe to interface buttons; used to change state
-        self.button_subscriber_ = self.create_subscription(InterfaceButtons,"/interface_buttons", self.button_callback,10)
+        self.button_subscriber_ = self.create_subscription(InterfaceButtons,"/interface_buttons",self.button_callback,qos_profile_sensor_data) #uses qos_profile_sensor_data
         
         #publish sense detections back to command
         self.detect_publisher_ = self.create_publisher(DetectSensors, "/detect_sensors",10)
@@ -25,14 +26,13 @@ class MySubscriberNode(Node):
         #subscribe to movement actions commands from command
         self.movement_subscriber_ = self.create_subscription(TargetMove, "/target_move", self.listener_callback,10)
 
-    def button_callback(self,msg):
-
-        if msg.button_2.is_pressed:
-            self.get_logger().info("right button pressed")
-            self.detect_publisher_.publish(msg)
+    def button_callback(self,msg: InterfaceButtons):
         
         if msg.button_1.is_pressed:
             self.get_logger().info("left button pressed")
+            self.detect_publisher_.publish(msg)
+        if msg.button_2.is_pressed:
+            self.get_logger().info("right button pressed")
             self.detect_publisher_.publish(msg)
         
 
