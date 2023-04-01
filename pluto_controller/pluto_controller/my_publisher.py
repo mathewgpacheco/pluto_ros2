@@ -18,14 +18,14 @@ class MyPublisherNode(Node):
         self.publisher_ = self.create_publisher(TargetLight, "topic",10)
 
         self.movement_publisher_ = self.create_publisher(TargetMove,"/target_move",10)
-        # Change every 7 seconds
-        self.timer_ = self.create_timer(10, self.pub_move)
+        # Change every x seconds
+        self.timer_ = self.create_timer(1, self.publish_move)
         self.action = "forward"
 
     
  
         
-    def pub_move(self):
+    def publish_move(self):
         msg = TargetMove()
         msg.twst.linear.x = 1.0
         msg.twst.angular.z = 2.0

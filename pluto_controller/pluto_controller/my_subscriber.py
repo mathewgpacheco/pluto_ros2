@@ -20,25 +20,24 @@ class MySubscriberNode(Node):
         #subscribe to movement actions commands
         self.movement_subscriber_ = self.create_subscription(TargetMove, "/target_move", self.listener_callback,10)
 
+        self.movement_status_subscriber = self.create_subscription(WheelStatus,"/wheel_status",self.status_listener_callback,10)
+        self.movement_velocity_subscriber = self.create_subscription(WheelVels,"/wheel_vels",self.status_listener_callback,10)
+    def status_listener_callback(self,msg):
+        status = WheelStatus()
+        velocity = WheelVels()
+
+        velocity = msg.velocity
+        status = msg.status
+        self.get_logger().info("Pluto wheels_enabled: " + str(status.wheels_enabled))
+        self.get_logger().info("Pluto pwm left/right: " + str(status.pwm_left) + " : " + str(status.pwm_right))
+        self.get_logger().info("Pluto velocity left/right " + str(velocity.velocity_left) + " : " + str(velocity.velocity_right))
 
     def listener_callback(self,msg):
         payload = msg.data
         move = Twist()
-        ticks = WheelTicks()
-        vels = WheelVels()
-        status = WheelStatus()
-
         move = msg.twst
-        ticks = msg.tick
-        vels = msg.vel
-        status = msg.status
-
         self.get_logger().info("Message recieved...moving " + str(move))
         self.cmd_move_pub.publish(move)
-        
-        self.get_logger().info("Pluto ticks left/right: " + str(ticks.ticks_left) +" : "+ str(ticks.ticks_right))
-        self.get_logger().info("Pluto vels left/right: " + str(vels.velocity_left) +" : "+ str(vels.velocity_right))
-        self.get_logger().info("Pluto status: " + str(status.wheels_enabled))
 def main(args=None):
     rclpy.init(args=args)
     node = MySubscriberNode()
