@@ -11,7 +11,6 @@ class MyPublisherNode(Node):
 
         #Message class, Name of topic, Queue message size
         self.publisher_ = self.create_publisher(TargetLight, "topic",10)
-
         # Change every 7 seconds
         self.timer_ = self.create_timer(5, self.timer_callback)
         self.i = 0

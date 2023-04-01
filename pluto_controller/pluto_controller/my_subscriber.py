@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import rclpy
 from rclpy.node import Node
+from irobot_create_msgs.msg import WheelStatus
 from pluto_interfaces.msg import TargetLight
 
 class MySubscriberNode(Node):
@@ -8,7 +9,11 @@ class MySubscriberNode(Node):
 
     def __init__(self):
         super().__init__("my_subscriber")
-        self.audio_subscriber_ = self.create_subscription(TargetLight,"topic",self.listener_callback,10)
+        self.my_subscriber_ = self.create_subscription(TargetLight,"topic",self.listener_callback,10)
+        self.wheel_status_subscriber_  = self.create_subscription(WheelStatus,"/wheel_status",self.status_callback, 10)
+
+    def status_callback(self,msg):
+        self.get_logger().info("Status of wheels: " + str(msg))
 
     def listener_callback(self,msg):
         payload = msg.data
