@@ -18,13 +18,13 @@ class RPiNode(Node):
         #subscribe to bumpers
         self.button_subscriber_ = self.create_subscription(HazardDetectionVector,
         "/hazard_detection",
-        self.detector_callback,
+        self.bumper_detector_callback,
         qos_profile_sensor_data)
 
         #subscribe to ir sensors
         self.button_subscriber_ = self.create_subscription(IrIntensityVector,
         "/ir_intensity",
-        self.detector_callback,
+        self.ir_detector_callback,
         qos_profile_sensor_data)
 
 
@@ -37,21 +37,19 @@ class RPiNode(Node):
         self.get_logger().info("RPi Node initialized")
 
 
-
-    def detector_callback(self,msg):
+    def bumper_detector_callback(self,msg):
         payload = DetectSignals()
-        print(msg)
-        if self.detection_method == "bumpers":
-            payload.bumper_signals.header.stamp = self.get_clock().now().to_msg()
-            payload.detection_method = "bumpers"
-            payload.bumper_signals = msg
-            self.detect_publisher_.publish(payload)
+        payload.bumper_signals.header.stamp = self.get_clock().now().to_msg()
+        payload.detection_method = "bumpers"
+        payload.bumper_signals = msg
+        self.detect_publisher_.publish(payload)
 
-        if self.detection_method == "ir":
-            payload.ir_signals.header.stamp = self.get_clock().now().to_msg()
-            payload.detection_method = "ir"
-            payload.ir_signals = msg
-            self.detect_publisher_.publish(payload)
+    def ir_detector_callback(self,msg):
+        payload = DetectSignals()
+        payload.ir_signals.header.stamp = self.get_clock().now().to_msg()
+        payload.detection_method = "ir"
+        payload.ir_signals = msg
+        self.detect_publisher_.publish(payload)
         
 def main(args=None):
     rclpy.init(args=args)
