@@ -3,6 +3,7 @@ import rclpy
 from rclpy.node import Node
 from rclpy.qos import qos_profile_sensor_data
 from irobot_create_msgs.msg import HazardDetectionVector
+from irobot_create_msgs.msg import IrIntensityVector
 from geometry_msgs.msg import Twist
 from pluto_interfaces.msg import TargetMove
 from pluto_interfaces.msg import DetectSignals
@@ -14,11 +15,18 @@ class RPiNode(Node):
         #publish an actual move
         self.cmd_move_pub = self.create_publisher(Twist,"/cmd_vel",10)
 
-        #subscribe to bumpers; used to change state
+        #subscribe to bumpers
         self.button_subscriber_ = self.create_subscription(HazardDetectionVector,
         "/hazard_detection",
         self.detector_callback,
         qos_profile_sensor_data)
+
+        #subscribe to ir sensors
+        self.button_subscriber_ = self.create_subscription(IrIntensityVector,
+        "/ir_intensity",
+        self.detector_callback,
+        qos_profile_sensor_data)
+
 
         #publish signals back to command
         self.detect_publisher_ = self.create_publisher(DetectSignals,
@@ -30,11 +38,11 @@ class RPiNode(Node):
 
 
 
-    def detector_callback(self,msg: HazardDetectionVector):
+    def detector_callback(self,msg):
         payload = DetectSignals()
-        payload.data = "this is a message"
-        payload.signals = msg
         payload.signals.header.stamp = self.get_clock().now().to_msg()
+        payload.detection_method = "bumpers"
+        payload.bumper_signals = msg
         self.detect_publisher_.publish(payload)
         
 def main(args=None):

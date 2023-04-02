@@ -1,2 +1,3 @@
-string data
-irobot_create_msgs/HazardDetectionVector signals
+string detection_method
+irobot_create_msgs/HazardDetectionVector bumper_signals
+irobot_create_msgs/IrIntensityVector ir_signals
