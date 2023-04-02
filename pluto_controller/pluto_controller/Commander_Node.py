@@ -2,16 +2,16 @@
 import rclpy
 from rclpy.node import Node
 from pluto_interfaces.msg import TargetMove
-from pluto_interfaces.msg import DetectSignals
+from pluto_interfaces.msg import SignalValues
 from irobot_create_msgs.msg import HazardDetectionVector
 from rclpy.qos import qos_profile_sensor_data
 
 class CommanderNode(Node):
     def __init__(self):
         super().__init__("Commander_Node")
-        
+        self.TOO_CLOSE_THRESHOLD = 300
         #Subscribe to recieve custom detector signals
-        self.detector_subscriber_ = self.create_subscription(DetectSignals,
+        self.detector_subscriber_ = self.create_subscription(SignalValues,
         "/detect_signals",
         self.listener_callback, 
         qos_profile_sensor_data)
@@ -19,12 +19,12 @@ class CommanderNode(Node):
 
         self.get_logger().info("Commander Node initialized")
 
-    def listener_callback(self,msg: DetectSignals):
+    def listener_callback(self,msg: SignalValues):
         #do pre-condition stuff before eval
         self.eval_signals(msg)
     
 
-    def eval_signals(self,msg: DetectSignals):
+    def eval_signals(self,msg: SignalValues):
         if msg.detection_method == "bumpers":
             for signal in msg.bumper_signals.detections:
                 if signal.header.frame_id == "bump_left":
@@ -38,24 +38,32 @@ class CommanderNode(Node):
        
         if msg.detection_method =="ir":
 
-            ir_intensity_side_left = msg.ir_signals.readings[0].value
-            ir_intensity_left = msg.ir_signals.readings[1].value
-            ir_intensity_front_left = msg.ir_signals.readings[2].value
-            ir_intensity_front_center_left = msg.ir_signals.readings[3].value
-            ir_intensity_right = msg.ir_signals.readings[4].value
-            ir_intensity_front_right = msg.ir_signals.readings[5].value
-            ir_intensity_front_center_right = msg.ir_signals.readings[6].value
-            
-            self.get_logger().info("IR readings: "+ 
-            "IR   SD   LFT:  " + str(ir_intensity_side_left) + 
-            " IR        LFT:  " + str(ir_intensity_left) + 
-            " IR   FR   LFT:  " + str(ir_intensity_front_left) +
-            " IR FR CNT LFT:  " + str(ir_intensity_front_center_left)+
-            " IR        RGT:  " + str(ir_intensity_right)+ 
-            " IR   FR   RGT:  " + str(ir_intensity_front_right)+
-            " IR FR CNT RGHT:  " + str(ir_intensity_front_center_right))
+            leftSideObj = msg.ir_signals.readings[0].value > self.TOO_CLOSE_THRESHOLD
+            leftObj = msg.ir_signals.readings[1].value > self.TOO_CLOSE_THRESHOLD
+            leftAngleObj = msg.ir_signals.readings[2].value > self.TOO_CLOSE_THRESHOLD
+            leftAheadObj = msg.ir_signals.readings[3].value > self.TOO_CLOSE_THRESHOLD
 
-            #can detect objects now :D
+            rightObj = msg.ir_signals.readings[4].value> self.TOO_CLOSE_THRESHOLD
+            rightAngleObj = msg.ir_signals.readings[5].value > self.TOO_CLOSE_THRESHOLD
+            rightAheadObj = msg.ir_signals.readings[6].value > self.TOO_CLOSE_THRESHOLD
+            
+            if leftSideObj:
+                self.get_logger().info("Left side object detected.")
+            if leftObj:
+                self.get_logger().info("Left object detected.")
+            if leftAngleObj:
+                self.get_logger().info("Left angle object detected.")
+            if leftAheadObj:
+                self.get_logger().info("Left ahead object detected.")
+            if rightObj:
+                self.get_logger().info("Right object detected.")
+            if rightAngleObj:
+                self.get_logger().info("Right angle object detected.")
+            if rightAheadObj:
+                self.get_logger().info("Right ahead object detected.")
+            
+            else:
+                pass
 
 def main(args=None):
     rclpy.init(args=args)
