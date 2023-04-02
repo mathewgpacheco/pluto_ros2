@@ -32,7 +32,7 @@ class RPiNode(Node):
 
     def detector_callback(self,msg: HazardDetectionVector):
         payload = DetectSignals()
-        payload.data = msg
+        payload.data = "this is my data message"
         payload.signals = msg.detections
 
         self.detect_publisher_.publish(payload)
