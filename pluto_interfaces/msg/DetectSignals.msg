@@ -1,2 +1,2 @@
 string data
-irobot_create_msgs/HazardDetectionVector bumpers
+irobot_create_msgs/HazardDetectionVector signals
