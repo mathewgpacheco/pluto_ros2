@@ -48,12 +48,12 @@ class CommanderNode(Node):
             
             self.get_logger().info("IR readings: "+ 
             "IR   SD   LFT:  " + str(ir_intensity_side_left) + 
-            "IR        LFT:  " + str(ir_intensity_left) + 
-            "IR   FR   LFT:  " + str(ir_intensity_front_left) +
-            "IR FR CNT LFT:  " + str(ir_intensity_front_center_left)+
-            "IR        RGT:  " + str(ir_intensity_right)+ 
-            "IR   FR   RGT:  " + str(ir_intensity_front_right)+
-            "IR FR CNT RGHT:  " + str(ir_intensity_front_center_right))
+            " IR        LFT:  " + str(ir_intensity_left) + 
+            " IR   FR   LFT:  " + str(ir_intensity_front_left) +
+            " IR FR CNT LFT:  " + str(ir_intensity_front_center_left)+
+            " IR        RGT:  " + str(ir_intensity_right)+ 
+            " IR   FR   RGT:  " + str(ir_intensity_front_right)+
+            " IR FR CNT RGHT:  " + str(ir_intensity_front_center_right))
 
             #can detect objects now :D
 
