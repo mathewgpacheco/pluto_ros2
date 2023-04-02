@@ -20,8 +20,8 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            "my_publisher = pluto_controller.my_publisher:main",
-            "my_subscriber = pluto_controller.my_subscriber:main",
+            "Commander_Node = pluto_controller.Commander_Node:main",
+            "RPi_Node = pluto_controller.RPi_Node:main",
         ],
     },
 )

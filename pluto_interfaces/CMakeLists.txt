@@ -12,7 +12,7 @@ find_package(rosidl_default_generators REQUIRED)
 
 rosidl_generate_interfaces(${PROJECT_NAME}
   "msg/TargetMove.msg"
-  "msg/DetectSensors.msg"
+  "msg/DetectSignals.msg"
   DEPENDENCIES irobot_create_msgs
 )
 
