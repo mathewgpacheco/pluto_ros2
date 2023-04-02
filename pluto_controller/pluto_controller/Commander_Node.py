@@ -3,6 +3,7 @@ import rclpy
 from rclpy.node import Node
 from pluto_interfaces.msg import TargetMove
 from pluto_interfaces.msg import DetectSignals
+from irobot_create_msgs.msg import HazardDetectionVector
 from rclpy.qos import qos_profile_sensor_data
 
 class CommanderNode(Node):
@@ -18,23 +19,24 @@ class CommanderNode(Node):
 
         self.get_logger().info("Commander Node initialized")
 
-    def listener_callback(self,msg):
+    def listener_callback(self,msg: DetectSignals):
         #do pre-condition stuff before eval
-        self.get_logger().info("Listener callback commander pub")
         self.eval_signals(msg)
 
-    def eval_signals(self,signals):
-        
-        for signal in signals.detections:
+    def eval_signals(self,msg: DetectSignals):
+ 
+        for signal in msg.signals.detections:
             if signal.header.frame_id == "bump_left":
                 #service call potential state change
-                self.get_logger().info("Do something.")
-            if signal.header.frame_id  == "bump_right":
-                self.get_logger().info("Do something else.")
-            else:
-                #no service call - remain in current state
-                self.get_logger().info("Do nothing. msg: " + signals)
-        self.get_logger().info("Detection leng: "+ str(len(signals.detections)))
+                self.get_logger().info("LEFT BUMPER")
+            if signal.header.frame_id  == "bump_front_left":
+                self.get_logger().info("LEFT FRONT BUMPER")
+            if signal.header.frame_id == "bump_right":
+                #service call potential state change
+                self.get_logger().info("RIGHT BUMER")
+            if signal.header.frame_id  == "bump_front_right":
+                self.get_logger().info("RIGHT FRONT BUMPER")
+
 def main(args=None):
     rclpy.init(args=args)
     node = CommanderNode()
