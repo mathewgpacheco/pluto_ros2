@@ -12,6 +12,7 @@
   <depend>geometry_msgs</depend>
   <depend>irobot_create_msgs</depend>
   <depend>pluto_interfaces</depend>
+  <depend>sensor_msgs</depend>
 
   <test_depend>ament_copyright</test_depend>
   <test_depend>ament_flake8</test_depend>

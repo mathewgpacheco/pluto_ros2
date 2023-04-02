@@ -58,8 +58,8 @@ class RPiNode(Node):
         self.detect_publisher_.publish(payload)
     
     def battery_callback(self,msg: BatteryState):
-        self.get_logger().info("BATTERY %: "+msg.percentage + " CELL TEMP: " + msg.cell_temperature)
-        
+        self.get_logger().info("BATTERY %: "+str(msg.percentage) + " CELL TEMP: " + str(msg.cell_temperature))
+
 def main(args=None):
     rclpy.init(args=args)
     node = RPiNode()
