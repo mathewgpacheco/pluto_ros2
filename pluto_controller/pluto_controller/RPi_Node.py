@@ -60,7 +60,7 @@ class RPiNode(Node):
     def battery_callback(self,msg: BatteryState):
         self.get_logger().info("BATTERY: {:.2f}".format(100 *  msg.percentage) + "% --- TEMP: {:.2f}".format(msg.temperature)+ " celsius" +
         " --- CHARGE STATUS: " + str(msg.power_supply_status) + 
-        " --- POWER SUPPLY HEALTH: " + msg.power_supply_health)
+        " --- POWER SUPPLY HEALTH: " + str(msg.power_supply_health))
 
 def main(args=None):
     rclpy.init(args=args)
