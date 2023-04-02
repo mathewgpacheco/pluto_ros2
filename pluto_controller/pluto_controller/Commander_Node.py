@@ -18,14 +18,14 @@ class CommanderNode(Node):
 
     def listener_callback(self,msg):
         #do pre-condition stuff before eval
-        self.get_logger().info("the message: " + msg)
+        self.get_logger().info("Listener callback commander pub")
         self.eval_signals(msg)
 
     def eval_signals(self,signals):
-        if signals == 1:
+        if signals.header.frame_id == "bump_left":
             #service call state change
             self.get_logger().info("Do something.")
-        if signals == 2:
+        if signals.header.frame_id == "bump_right":
             self.get_logger().info("Do something else.")
         else:
             #no service call - do nothing

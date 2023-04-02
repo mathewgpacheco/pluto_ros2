@@ -32,10 +32,11 @@ class RPiNode(Node):
 
 
     def bumper_callback(self,msg: HazardDetectionVector):
-        
+        payload = DetectSignals()
+        payload.bumpers.detections = msg.detections
         for detection in msg.detections:
             print(detection.header.frame_id)
-            self.detect_publisher_.publish(detection)
+            self.detect_publisher_.publish(payload)
     #    if msg.detections[1] == 1:
     #        self.get_logger().info("Bumper pressed")
     #        self.detect_publisher_.publish(msg)
