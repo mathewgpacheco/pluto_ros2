@@ -28,20 +28,35 @@ class CommanderNode(Node):
         if msg.detection_method == "bumpers":
             for signal in msg.bumper_signals.detections:
                 if signal.header.frame_id == "bump_left":
-                    #service call potential state change
                     self.get_logger().info("LEFT BUMPER")
                 if signal.header.frame_id  == "bump_front_left":
                     self.get_logger().info("LEFT FRONT BUMPER")
                 if signal.header.frame_id == "bump_right":
-                    #service call potential state change
-                    self.get_logger().info("RIGHT BUMER")
+                    self.get_logger().info("RIGHT BUMPER")
                 if signal.header.frame_id  == "bump_front_right":
                     self.get_logger().info("RIGHT FRONT BUMPER")
        
         if msg.detection_method =="ir":
-            for ir_reading in msg.ir_signals.readings.data:
-                self.get_logger().info("IR : "+ str(ir_reading))
-            self.get_logger().info("whole ir: "+ str(msg.ir_signals.readings))
+
+            ir_intensity_side_left = msg.ir_signals.readings[0].value
+            ir_intensity_left = msg.ir_signals.readings[1].value
+            ir_intensity_front_left = msg.ir_signals.readings[2].value
+            ir_intensity_front_center_left = msg.ir_signals.readings[3].value
+            ir_intensity_right = msg.ir_signals.readings[4].value
+            ir_intensity_front_right = msg.ir_signals.readings[5].value
+            ir_intensity_front_center_right = msg.ir_signals.readings[6].value
+            
+            self.get_logger().info("IR readings: "+ 
+            "IR   SD   LFT:  " + str(ir_intensity_side_left) + 
+            "IR        LFT:  " + str(ir_intensity_left) + 
+            "IR   FR   LFT:  " + str(ir_intensity_front_left) +
+            "IR FR CNT LFT:  " + str(ir_intensity_front_center_left)+
+            "IR        RGT:  " + str(ir_intensity_right)+ 
+            "IR   FR   RGT:  " + str(ir_intensity_front_right)+
+            "IR FR CNT RGHT:  " + str(ir_intensity_front_center_right))
+
+            #can detect objects now :D
+
 def main(args=None):
     rclpy.init(args=args)
     node = CommanderNode()

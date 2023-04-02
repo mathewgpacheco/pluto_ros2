@@ -7,11 +7,13 @@ from irobot_create_msgs.msg import IrIntensityVector
 from geometry_msgs.msg import Twist
 from pluto_interfaces.msg import TargetMove
 from pluto_interfaces.msg import DetectSignals
+from sensor_msgs.msg import BatteryState
 
 class RPiNode(Node):
     def __init__(self):
         super().__init__("RPi_Node")
         self.detection_method = "bumpers"
+
         #publish an actual move
         self.cmd_move_pub = self.create_publisher(Twist,"/cmd_vel",10)
 
@@ -27,6 +29,10 @@ class RPiNode(Node):
         self.ir_detector_callback,
         qos_profile_sensor_data)
 
+        #subscribe to battery level
+        self.battery_subscriber_ = self.create_subscription(BatteryState,
+        "/battery_state",self.battery_callback,
+        qos_profile_sensor_data)
 
         #publish signals back to command
         self.detect_publisher_ = self.create_publisher(DetectSignals,
@@ -37,19 +43,22 @@ class RPiNode(Node):
         self.get_logger().info("RPi Node initialized")
 
 
-    def bumper_detector_callback(self,msg):
+    def bumper_detector_callback(self,msg: HazardDetectionVector):
         payload = DetectSignals()
         payload.bumper_signals.header.stamp = self.get_clock().now().to_msg()
         payload.detection_method = "bumpers"
         payload.bumper_signals = msg
         self.detect_publisher_.publish(payload)
 
-    def ir_detector_callback(self,msg):
+    def ir_detector_callback(self,msg: IrIntensityVector):
         payload = DetectSignals()
         payload.ir_signals.header.stamp = self.get_clock().now().to_msg()
         payload.detection_method = "ir"
         payload.ir_signals = msg
         self.detect_publisher_.publish(payload)
+    
+    def battery_callback(self,msg: BatteryState):
+        self.get_logger().info("BATTERY %: "+msg.percentage + " CELL TEMP: " + msg.cell_temperature)
         
 def main(args=None):
     rclpy.init(args=args)
