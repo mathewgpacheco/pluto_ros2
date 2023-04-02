@@ -40,13 +40,13 @@ class RPiNode(Node):
 
     def detector_callback(self,msg):
         payload = DetectSignals()
-
+        print(msg)
         if self.detection_method == "bumpers":
             payload.bumper_signals.header.stamp = self.get_clock().now().to_msg()
             payload.detection_method = "bumpers"
             payload.bumper_signals = msg
             self.detect_publisher_.publish(payload)
-            
+
         if self.detection_method == "ir":
             payload.ir_signals.header.stamp = self.get_clock().now().to_msg()
             payload.detection_method = "ir"
