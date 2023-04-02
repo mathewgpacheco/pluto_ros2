@@ -29,7 +29,7 @@ class RPiNode(Node):
         self.ir_detector_callback,
         qos_profile_sensor_data)
 
-        #subscribe to battery level
+        #Monitor power supply 
         self.battery_subscriber_ = self.create_subscription(BatteryState,
         "/battery_state",self.battery_callback,
         qos_profile_sensor_data)
@@ -58,7 +58,9 @@ class RPiNode(Node):
         self.detect_publisher_.publish(payload)
     
     def battery_callback(self,msg: BatteryState):
-        self.get_logger().info("BATTERY: {:.2f}".format(100 *  msg.percentage) + "% --- TEMP: {:.2}".format(msg.temperature)+ " celsius")
+        self.get_logger().info("BATTERY: {:.2f}".format(100 *  msg.percentage) + "% --- TEMP: {:.2f}".format(msg.temperature)+ " celsius" +
+        " --- CHARGE STATUS: " + str(msg.power_supply_status) + 
+        " --- POWER SUPPLY HEALTH: " + msg.power_supply_health)
 
 def main(args=None):
     rclpy.init(args=args)
@@ -67,7 +69,7 @@ def main(args=None):
     try:
         #weeeee
         rclpy.spin(node)
-    except KeyboardInterrupt:
+    except KeyboardInterrupt: 
         pass
 
     #destroy node and shutdown ros2 communication

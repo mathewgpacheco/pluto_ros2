@@ -9,7 +9,19 @@ from rclpy.qos import qos_profile_sensor_data
 class CommanderNode(Node):
     def __init__(self):
         super().__init__("Commander_Node")
-        self.TOO_CLOSE_THRESHOLD = 300
+
+        #Threshold to determine when obj it too close
+        self.TOO_CLOSE_THRESHOLD = 200
+        
+        #Various states the robot could be in
+        self.WANDER = 0
+        self.TURN_AROUND = 1
+        self.STRAIGHT = 2
+        self.AVOID = 3
+
+        #default state
+        self.current_state = self.WANDER
+
         #Subscribe to recieve custom detector signals
         self.detector_subscriber_ = self.create_subscription(SignalValues,
         "/detect_signals",
@@ -47,6 +59,9 @@ class CommanderNode(Node):
             rightAngleObj = msg.ir_signals.readings[5].value > self.TOO_CLOSE_THRESHOLD
             rightAheadObj = msg.ir_signals.readings[6].value > self.TOO_CLOSE_THRESHOLD
             
+
+
+
             if leftSideObj:
                 self.get_logger().info("Left side object detected.")
             if leftObj:
@@ -56,11 +71,11 @@ class CommanderNode(Node):
             if leftAheadObj:
                 self.get_logger().info("Left ahead object detected.")
             if rightObj:
-                self.get_logger().info("Right object detected.")
+                self.get_logger().info("Right ahead object detected.")
             if rightAngleObj:
                 self.get_logger().info("Right angle object detected.")
             if rightAheadObj:
-                self.get_logger().info("Right ahead object detected.")
+                self.get_logger().info("Right object detected.")
             
             else:
                 pass
