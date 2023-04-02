@@ -15,7 +15,7 @@ class CommanderNode(Node):
         self.listener_callback, 
         qos_profile_sensor_data)
         self.get_logger().info("Commander Node initialized")
-        
+
     def listener_callback(self,msg):
         #do pre-condition stuff before eval
         self.get_logger().info("the message: " + msg)
@@ -29,7 +29,7 @@ class CommanderNode(Node):
             self.get_logger().info("Do something else.")
         else:
             #no service call - do nothing
-            self.get_logger().info("Do nothing.")
+            self.get_logger().info("Do nothing. msg: " + signals)
 def main(args=None):
     rclpy.init(args=args)
     node = CommanderNode()

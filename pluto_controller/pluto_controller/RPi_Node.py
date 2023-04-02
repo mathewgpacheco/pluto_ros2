@@ -21,23 +21,27 @@ class RPiNode(Node):
         "/hazard_detection",
         self.bumper_callback,
         qos_profile_sensor_data)
-        #publish sense detections back to command
+
+        #publish signals back to command
         self.detect_publisher_ = self.create_publisher(DetectSignals,
         "/detect_signals",
         qos_profile_sensor_data)
-        
+
         self.get_logger().info("RPi Node initialized")
 
 
 
     def bumper_callback(self,msg: HazardDetectionVector):
-        self.get_logger().info("detection: "+ str(msg.detections[1]))
-        if msg.detections[1] == 1:
-            self.get_logger().info("Bumper pressed")
-            self.detect_publisher_.publish(msg)
-        else:
-            self.get_logger().info("Something else?")
-            self.detect_publisher_.publish(msg)
+        
+        for detection in msg.detections:
+            print(detection.header.frame_id)
+            self.detect_publisher_.publish(detection)
+    #    if msg.detections[1] == 1:
+    #        self.get_logger().info("Bumper pressed")
+    #        self.detect_publisher_.publish(msg)
+    #    else:
+    #        self.get_logger().info("Something else?")
+    #        self.detect_publisher_.publish(msg)
 
 def main(args=None):
     rclpy.init(args=args)
