@@ -39,7 +39,9 @@ class CommanderNode(Node):
                     self.get_logger().info("RIGHT FRONT BUMPER")
        
         if msg.detection_method =="ir":
-            pass
+            for ir_reading in msg.ir_signals.readings.data:
+                self.get_logger().info("IR : "+ str(ir_reading))
+            self.get_logger().info("whole ir: "+ str(msg.ir_signals.readings))
 def main(args=None):
     rclpy.init(args=args)
     node = CommanderNode()

@@ -11,7 +11,7 @@ from pluto_interfaces.msg import DetectSignals
 class RPiNode(Node):
     def __init__(self):
         super().__init__("RPi_Node")
-
+        self.detection_method = "bumpers"
         #publish an actual move
         self.cmd_move_pub = self.create_publisher(Twist,"/cmd_vel",10)
 
@@ -40,10 +40,18 @@ class RPiNode(Node):
 
     def detector_callback(self,msg):
         payload = DetectSignals()
-        payload.signals.header.stamp = self.get_clock().now().to_msg()
-        payload.detection_method = "bumpers"
-        payload.bumper_signals = msg
-        self.detect_publisher_.publish(payload)
+
+        if self.detection_method == "bumpers":
+            payload.bumper_signals.header.stamp = self.get_clock().now().to_msg()
+            payload.detection_method = "bumpers"
+            payload.bumper_signals = msg
+            self.detect_publisher_.publish(payload)
+            
+        if self.detection_method == "ir":
+            payload.ir_signals.header.stamp = self.get_clock().now().to_msg()
+            payload.detection_method = "ir"
+            payload.ir_signals = msg
+            self.detect_publisher_.publish(payload)
         
 def main(args=None):
     rclpy.init(args=args)
