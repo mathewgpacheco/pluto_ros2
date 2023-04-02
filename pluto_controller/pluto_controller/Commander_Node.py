@@ -22,10 +22,11 @@ class CommanderNode(Node):
         self.eval_signals(msg)
 
     def eval_signals(self,signals):
-        if signals.header.frame_id == "bump_left":
+        self.get_logger().info("signal: " +str(signals))
+        if signals.bumpers.detections.header.frame_id == "bump_left":
             #service call state change
             self.get_logger().info("Do something.")
-        if signals.header.frame_id == "bump_right":
+        if signals.bumpers.detections.header.frame_id  == "bump_right":
             self.get_logger().info("Do something else.")
         else:
             #no service call - do nothing
