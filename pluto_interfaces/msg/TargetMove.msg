@@ -1,5 +1,3 @@
 string data
 geometry_msgs/Twist twst
-irobot_create_msgs/WheelVels vel
-irobot_create_msgs/WheelTicks tick
-irobot_create_msgs/WheelStatus status
+geometry_msgs/Pose pose

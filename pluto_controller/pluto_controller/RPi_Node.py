@@ -4,6 +4,7 @@ from rclpy.node import Node
 from rclpy.qos import qos_profile_sensor_data
 from irobot_create_msgs.msg import HazardDetectionVector
 from irobot_create_msgs.msg import IrIntensityVector
+from irobot_create_msgs.msg import WheelTicks
 from geometry_msgs.msg import Twist
 from pluto_interfaces.msg import TargetMove
 from pluto_interfaces.msg import SignalValues
@@ -16,6 +17,12 @@ class RPiNode(Node):
 
         #publish an actual move
         self.cmd_move_pub = self.create_publisher(Twist,"/cmd_vel",10)
+
+        #subscribe to moves
+        self.move_subscriber = self.create_subscription(TargetMove,
+        "/target_move",
+        self.target_move_callback,
+        10)
 
         #subscribe to bumpers
         self.button_subscriber_ = self.create_subscription(HazardDetectionVector,
@@ -39,9 +46,27 @@ class RPiNode(Node):
         "/detect_signals",
         qos_profile_sensor_data)
 
-
+        #Monitor power supply 
+        self.encoder_subscriber_ = self.create_subscription(WheelTicks,
+        "/wheels_tick",self.encoder_callback,
+        qos_profile_sensor_data)
         self.get_logger().info("RPi Node initialized")
 
+        #publish signals back to command
+        self.encoder_publisher_ = self.create_publisher(WheelTicks,
+        "/wheel_ticks",
+        qos_profile_sensor_data)
+
+    #Forward the message back to command
+    def encoder_callback(self,msg:WheelTicks):
+
+        self.encoder_publisher_.publish(msg)
+
+    def target_move_callback(self,msg: TargetMove):
+        next_move = Twist()
+
+        
+        pass
 
     def bumper_detector_callback(self,msg: HazardDetectionVector):
         payload = SignalValues()

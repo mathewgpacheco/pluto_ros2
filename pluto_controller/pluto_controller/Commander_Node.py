@@ -5,6 +5,7 @@ from pluto_interfaces.msg import TargetMove
 from pluto_interfaces.msg import SignalValues
 from irobot_create_msgs.msg import HazardDetectionVector
 from rclpy.qos import qos_profile_sensor_data
+from irobot_create_msgs.msg import WheelTicks
 
 class CommanderNode(Node):
     def __init__(self):
@@ -28,13 +29,23 @@ class CommanderNode(Node):
         self.listener_callback, 
         qos_profile_sensor_data)
 
+        #
+        self.encoder_subscriber_ = self.create_subscription(WheelTicks,
+        "/wheels_tick",self.encoder_callback,
+        qos_profile_sensor_data)
+
 
         self.get_logger().info("Commander Node initialized")
 
     def listener_callback(self,msg: SignalValues):
         #do pre-condition stuff before eval
         self.eval_signals(msg)
-    
+
+
+ 
+    def encoder_callback(self,msg:WheelTicks):
+        self.get_logger().info("right encoder: " + str(msg.ticks_right))
+        self.get_logger().info("left encoder: " + str(msg.ticks_left))
 
     def eval_signals(self,msg: SignalValues):
         if msg.detection_method == "bumpers":
