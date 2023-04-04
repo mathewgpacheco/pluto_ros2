@@ -48,18 +48,18 @@ class RPiNode(Node):
 
         #Monitor power supply 
         self.encoder_subscriber_ = self.create_subscription(WheelTicks,
-        "/wheels_tick",self.encoder_callback,
+        "/wheel_encoder",self.encoder_callback,
         qos_profile_sensor_data)
         self.get_logger().info("RPi Node initialized")
 
         #publish signals back to command
         self.encoder_publisher_ = self.create_publisher(WheelTicks,
-        "/wheel_ticks",
+        "/wheel_encoder",
         qos_profile_sensor_data)
 
     #Forward the message back to command
     def encoder_callback(self,msg:WheelTicks):
-
+        self.get_logger().info("Inside encoder callback L/R: "+ str(msg.ticks_left) + " : " +str(msg.ticks_right))
         self.encoder_publisher_.publish(msg)
 
     def target_move_callback(self,msg: TargetMove):

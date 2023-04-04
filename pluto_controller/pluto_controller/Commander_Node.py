@@ -31,7 +31,7 @@ class CommanderNode(Node):
 
         #
         self.encoder_subscriber_ = self.create_subscription(WheelTicks,
-        "/wheels_tick",self.encoder_callback,
+        "/wheel_endcoder",self.encoder_callback,
         qos_profile_sensor_data)
 
 
