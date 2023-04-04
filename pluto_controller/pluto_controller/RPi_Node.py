@@ -48,7 +48,7 @@ class RPiNode(Node):
 
         #Monitor power supply 
         self.encoder_subscriber_ = self.create_subscription(WheelTicks,
-        "/wheel_encoder",self.encoder_callback,
+        "/wheel_ticks",self.encoder_callback,
         10)
         self.get_logger().info("RPi Node initialized")
 
@@ -69,8 +69,6 @@ class RPiNode(Node):
 
     def target_move_callback(self,msg: TargetMove):
         next_move = Twist()
-
-        
         pass
 
     def bumper_detector_callback(self,msg: HazardDetectionVector):
