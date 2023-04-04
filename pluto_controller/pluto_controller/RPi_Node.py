@@ -45,25 +45,21 @@ class RPiNode(Node):
         self.detect_publisher_ = self.create_publisher(SignalValues,
         "/detect_signals",qos_profile_sensor_data)
 
-        #
+        #sub to encoder ticks to forward to command
         self.encoder_subscriber_ = self.create_subscription(WheelTicks,
         "/wheel_ticks",self.encoder_callback,
         qos_profile_sensor_data)
 
+        self.encoder_publisher_ = self.create_publisher(WheelTicks,
+        "/wheel_encoder",qos_profile_sensor_data)
         
         self.get_logger().info("RPi Node initialized")
 
 
     #Forward the message back to command
     def encoder_callback(self,msg:WheelTicks):
-        self.get_logger().info("in encoder ")
-        encoder_msg= WheelTicks()
-        encoder_msg.header.stamp = self.get_clock().now().to_msg()
-        encoder_msg.header.frame_id = msg.header.frame_id
-        encoder_msg.ticks_left = msg.ticks_left
-        encoder_msg.ticks_right = msg.ticks_right
-        self.get_logger().info("Inside encoder callback L/R: "+ str(encoder_msg.ticks_left) + " : " +str(encoder_msg.ticks_right))
-        #self.encoder_publisher_.publish(encoder_msg)
+        self.get_logger().info("Inside encoder callback L/R: "+ str(msg.ticks_left) + " : " +str(msg.ticks_right))
+        self.encoder_publisher_.publish(msg)
 
     def target_move_callback(self,msg: TargetMove):
         next_move = Twist()

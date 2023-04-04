@@ -31,7 +31,8 @@ class CommanderNode(Node):
 
         #
         self.encoder_subscriber_ = self.create_subscription(WheelTicks,
-        "/wheel_encoder",self.encoder_callback,
+        "/wheel_encoder",
+        self.encoder_callback,
         qos_profile_sensor_data)
 
 
@@ -44,8 +45,7 @@ class CommanderNode(Node):
 
  
     def encoder_callback(self,msg:WheelTicks):
-        self.get_logger().info("right encoder: " + str(msg.ticks_right))
-        self.get_logger().info("left encoder: " + str(msg.ticks_left))
+        self.get_logger().info("Time: " + str(msg.header.stamp)+ " - L: " + str(msg.ticks_left)+ " : " "R: " + str(msg.ticks_right))
 
     def eval_signals(self,msg: SignalValues):
         if msg.detection_method == "bumpers":
