@@ -43,7 +43,7 @@ class RPiNode(Node):
 
         #publish signals back to command
         self.detect_publisher_ = self.create_publisher(SignalValues,
-        "/detect_signals")
+        "/detect_signals",qos_profile_sensor_data)
 
         #
         self.encoder_subscriber_ = self.create_subscription(WheelTicks,
