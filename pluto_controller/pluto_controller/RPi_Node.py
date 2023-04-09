@@ -11,9 +11,10 @@ from pluto_interfaces.msg import TargetMove
 from pluto_interfaces.msg import SignalValues
 from sensor_msgs.msg import BatteryState
 
+import cv2
 from cv_bridge import CvBridge, CvBridgeError
 from sensor_msgs.msg import Image
-import cv2
+
 
 class RPiNode(Node):
     def __init__(self):
@@ -69,7 +70,7 @@ class RPiNode(Node):
         
         self.bridge = CvBridge()
 
-        self.image_subscriber_ = self.create_subscription(Image,"image_topic",self.image_callback,
+        self.image_subscriber_ = self.create_subscription(Image,"image_raw",self.image_callback,
         qos_profile_sensor_data)
 
 
@@ -82,6 +83,7 @@ class RPiNode(Node):
             print(e)
         
         try:
+            self.get_logger().info("Re-publishing an image...")
             self.image_publisher_.publish(self.bridge.cv2_to_imgmsg(cv_image,"bgr8"))
         except CvBridgeError as e:
             print(e)
