@@ -24,12 +24,12 @@ class RPiNode(Node):
         #publish an actual move
         self.cmd_move_pub = self.create_publisher(Twist,
         "/cmd_vel",
-        10)
+        qos_profile_sensor_data)
 
         self.target_move_subscriber_ = self.create_subscription(Twist,
         "/target_move",
         self.target_move_callback,
-        10)
+        qos_profile_sensor_data)
         #subscribe to moves
         #self.move_subscriber = self.create_subscription(TargetMove,
         #"/target_move",
@@ -96,10 +96,10 @@ class RPiNode(Node):
 
     def target_move_callback(self,msg: Twist):
         move = Twist()
-        move.linear.x = msg.linear.x
+        #move.linear.x = msg.linear.x
         move.angular.z = msg.angular.z
 
-        self.get_logger().info("sending create3 a msg: " + str(msg))
+        self.get_logger().info("sending create3 a msg: " + str(move))
         self.cmd_move_pub.publish(move)
 
     #Forward the message back to command

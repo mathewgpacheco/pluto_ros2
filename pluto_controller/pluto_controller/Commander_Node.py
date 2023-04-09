@@ -99,7 +99,7 @@ class CommanderNode(Node):
         
     def center_robot(self,x):
         move = Twist()
-        move.linear.x = 1.0
+        #move.linear.x = 0.0
         #center is 320
         # partition 0 to 300 
         # 340 to 640
