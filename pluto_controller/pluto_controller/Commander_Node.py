@@ -101,13 +101,13 @@ class CommanderNode(Node):
         move = Twist()
 
         if x < self.IMAGE_CENTER:
-            move.angular.z = -1.0
+            move.angular.z = -2.0
             
         if x > self.IMAGE_CENTER:
-            move.angular.z = 1.0
+            move.angular.z = 2.0
 
         else:
-            pass
+            move.angular.z = 0.0
         self.get_logger().info("publishing a twist: " + str(move))
         self.target_move_publisher_.publish(move)
         

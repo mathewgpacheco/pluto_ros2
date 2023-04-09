@@ -94,9 +94,12 @@ class RPiNode(Node):
         except CvBridgeError as e:
             print(e)
 
-    def target_move_callback(self,msg):
+    def target_move_callback(self,msg: Twist):
+        move = Twist()
+        move.angular.z = msg.angular.z
+
         self.get_logger().info("sending create3 a msg: " + str(msg))
-        self.cmd_move_pub.publish(msg)
+        self.cmd_move_pub.publish(move)
 
     #Forward the message back to command
     def encoder_callback(self,msg:WheelTicks):
