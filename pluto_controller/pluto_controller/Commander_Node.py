@@ -64,7 +64,7 @@ class CommanderNode(Node):
 
         self.target_move_publisher_ = self.create_publisher(Twist,
         "/target_move",
-        qos_profile_sensor_data)
+        10)
 
         self.get_logger().info("Commander Node initialized")
 
@@ -99,16 +99,23 @@ class CommanderNode(Node):
         
     def center_robot(self,x):
         move = Twist()
-
-        if x < self.IMAGE_CENTER:
+        move.linear.x = 1.0
+        #center is 320
+        # partition 0 to 300 
+        # 340 to 640
+        if x < (self.IMAGE_CENTER - 20):
+            self.get_logger().info("left side")
             move.angular.z = -2.0
             
-        if x > self.IMAGE_CENTER:
+        if x > self.IMAGE_CENTER + 20:
+            self.get_logger().info("right side")
             move.angular.z = 2.0
 
-        else:
+
+        if x <= self.IMAGE_CENTER +20 and x > self.IMAGE_CENTER - 20:
+            self.get_logger().info("center")
             move.angular.z = 0.0
-        self.get_logger().info("publishing a twist: " + str(move))
+        #self.get_logger().info("publishing a twist: " + str(move))
         self.target_move_publisher_.publish(move)
         
 
