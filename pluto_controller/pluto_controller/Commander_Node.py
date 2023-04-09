@@ -8,9 +8,9 @@ from rclpy.qos import qos_profile_sensor_data
 from irobot_create_msgs.msg import WheelTicks
 from irobot_create_msgs.msg import WheelVels
 import random
+import cv2
 from cv_bridge import CvBridge, CvBridgeError
 from sensor_msgs.msg import Image
-import cv2
 
 class CommanderNode(Node):
     def __init__(self):
