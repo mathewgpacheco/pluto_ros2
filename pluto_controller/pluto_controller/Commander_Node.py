@@ -89,7 +89,7 @@ class CommanderNode(Node):
                         #self.get_logger().info("index: " + str(cx) + " : " + str(cy))
                         
                         #width is 640, height is 480
-                        self.get_logger().info("pic dimensions: " + str(w) + " : " + str(h))
+                        #self.get_logger().info("pic dimensions: " + str(w) + " : " + str(h))
                         self.center_robot(cx)
                 self.mpDraw.draw_landmarks(cv_image_flipped ,handLms,self.mpHands.HAND_CONNECTIONS)
         cv2.imshow("Image Window", cv_image_flipped )
@@ -101,13 +101,14 @@ class CommanderNode(Node):
         move = Twist()
 
         if x < self.IMAGE_CENTER:
-            move.angular.z = -1
+            move.angular.z = -1.0
             
         if x > self.IMAGE_CENTER:
-            move.angular.z = 1
+            move.angular.z = 1.0
 
         else:
             pass
+        self.get_logger().info("publishing a twist: " + str(move))
         self.target_move_publisher_.publish(move)
         
 

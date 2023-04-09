@@ -89,12 +89,13 @@ class RPiNode(Node):
             print(e)
         
         try:
-            self.get_logger().info("Re-publishing an image...")
+            #self.get_logger().info("Re-publishing an image...")
             self.image_publisher_.publish(self.bridge.cv2_to_imgmsg(cv_image,"bgr8"))
         except CvBridgeError as e:
             print(e)
 
     def target_move_callback(self,msg):
+        self.get_logger().info("sending create3 a msg: " + str(msg))
         self.cmd_move_pub.publish(msg)
 
     #Forward the message back to command
