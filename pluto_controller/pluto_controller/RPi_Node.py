@@ -5,10 +5,15 @@ from rclpy.qos import qos_profile_sensor_data
 from irobot_create_msgs.msg import HazardDetectionVector
 from irobot_create_msgs.msg import IrIntensityVector
 from irobot_create_msgs.msg import WheelTicks
+from irobot_create_msgs.msg import WheelVels
 from geometry_msgs.msg import Twist
 from pluto_interfaces.msg import TargetMove
 from pluto_interfaces.msg import SignalValues
 from sensor_msgs.msg import BatteryState
+
+from cv_bridge import CvBridge, CvBridgeError
+from sensor_msgs.msg import Image
+import cv2
 
 class RPiNode(Node):
     def __init__(self):
@@ -19,22 +24,22 @@ class RPiNode(Node):
         self.cmd_move_pub = self.create_publisher(Twist,"/cmd_vel",10)
 
         #subscribe to moves
-        self.move_subscriber = self.create_subscription(TargetMove,
-        "/target_move",
-        self.target_move_callback,
-        10)
+        #self.move_subscriber = self.create_subscription(TargetMove,
+        #"/target_move",
+        #self.target_move_callback,
+        #10)
 
         #subscribe to bumpers
-        self.button_subscriber_ = self.create_subscription(HazardDetectionVector,
-        "/hazard_detection",
-        self.bumper_detector_callback,
-        qos_profile_sensor_data)
+        #self.button_subscriber_ = self.create_subscription(HazardDetectionVector,
+        #"/hazard_detection",
+        #self.bumper_detector_callback,
+        #qos_profile_sensor_data)
 
         #subscribe to ir sensors
-        self.button_subscriber_ = self.create_subscription(IrIntensityVector,
-        "/ir_intensity",
-        self.ir_detector_callback,
-        qos_profile_sensor_data)
+        #self.button_subscriber_ = self.create_subscription(IrIntensityVector,
+        #"/ir_intensity",
+        #self.ir_detector_callback,
+        #qos_profile_sensor_data)
 
         #Monitor power supply 
         #self.battery_subscriber_ = self.create_subscription(BatteryState,
@@ -42,18 +47,44 @@ class RPiNode(Node):
         #qos_profile_sensor_data)
 
         #publish signals back to command
-        self.detect_publisher_ = self.create_publisher(SignalValues,
-        "/detect_signals",qos_profile_sensor_data)
+        #self.detect_publisher_ = self.create_publisher(SignalValues,
+        #"/detect_signals",qos_profile_sensor_data)
 
         #sub to encoder ticks to forward to command
-        self.encoder_subscriber_ = self.create_subscription(WheelTicks,
-        "/wheel_ticks",self.encoder_callback,
+        #self.encoder_subscriber_ = self.create_subscription(WheelTicks,
+        #"/wheel_ticks",self.encoder_callback,
+        #qos_profile_sensor_data)
+
+        #self.velocity_subscriber_ = self.create_publisher(WheelVels,
+        #"/target_move",qos_profile_sensor_data)
+
+
+        #sub to encoder ticks to forward to command
+       # self.encoder_subscriber_ = self.create_subscription(WheelTicks,
+        #"/wheel_ticks",self.encoder_callback,
+        #qos_profile_sensor_data)
+        
+        #Publish images
+        self.image_publisher_ = self.create_publisher(Image,"image_topic2",qos_profile_sensor_data)
+        
+        self.bridge = CvBridge()
+
+        self.image_subscriber_ = self.create_subscription(Image,"image_topic",self.image_callback,
         qos_profile_sensor_data)
 
-        self.encoder_publisher_ = self.create_publisher(WheelTicks,
-        "/wheel_encoder",qos_profile_sensor_data)
-        
+
         self.get_logger().info("RPi Node initialized")
+
+    def image_callback(self,msg):
+        try:
+            cv_image =self.bridge.imgmsg_to_cv2(msg,"bgr8")
+        except CvBridgeError as e:
+            print(e)
+        
+        try:
+            self.image_publisher_.publish(self.bridge.cv2_to_imgmsg(cv_image,"bgr8"))
+        except CvBridgeError as e:
+            print(e)
 
 
     #Forward the message back to command
@@ -62,7 +93,8 @@ class RPiNode(Node):
         self.encoder_publisher_.publish(msg)
 
     def target_move_callback(self,msg: TargetMove):
-        next_move = Twist()
+        move = Twist()
+        
         pass
 
     def bumper_detector_callback(self,msg: HazardDetectionVector):
