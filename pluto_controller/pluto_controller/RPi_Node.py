@@ -22,8 +22,14 @@ class RPiNode(Node):
         self.detection_method = "bumpers"
 
         #publish an actual move
-        self.cmd_move_pub = self.create_publisher(Twist,"/cmd_vel",10)
+        self.cmd_move_pub = self.create_publisher(Twist,
+        "/cmd_vel",
+        qos_profile_sensor_data)
 
+        self.target_move_subscriber_ = self.create_subscription(Twist,
+        "/target_move",
+        self.target_move_callback,
+        qos_profile_sensor_data)
         #subscribe to moves
         #self.move_subscriber = self.create_subscription(TargetMove,
         #"/target_move",
@@ -88,16 +94,14 @@ class RPiNode(Node):
         except CvBridgeError as e:
             print(e)
 
+    def target_move_callback(self,msg):
+        self.cmd_move_pub.publish(msg)
 
     #Forward the message back to command
     def encoder_callback(self,msg:WheelTicks):
         self.get_logger().info("Inside encoder callback L/R: "+ str(msg.ticks_left) + " : " +str(msg.ticks_right))
         self.encoder_publisher_.publish(msg)
 
-    def target_move_callback(self,msg: TargetMove):
-        move = Twist()
-        
-        pass
 
     def bumper_detector_callback(self,msg: HazardDetectionVector):
         payload = SignalValues()

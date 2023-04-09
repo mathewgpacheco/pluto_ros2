@@ -7,8 +7,11 @@ from irobot_create_msgs.msg import HazardDetectionVector
 from rclpy.qos import qos_profile_sensor_data
 from irobot_create_msgs.msg import WheelTicks
 from irobot_create_msgs.msg import WheelVels
+from geometry_msgs.msg import Twist
 import random
 import cv2
+import mediapipe as mp
+
 from cv_bridge import CvBridge, CvBridgeError
 from sensor_msgs.msg import Image
 
@@ -50,8 +53,17 @@ class CommanderNode(Node):
         #qos_profile_sensor_data)
         
         self.bridge = CvBridge()
-
+        
+        self.mpHands = mp.solutions.hands
+        self.hands = self.mpHands.Hands(max_num_hands=1, min_detection_confidence=0.7)
+        self.mpDraw = mp.solutions.drawing_utils
+        self.IMAGE_CENTER = 320
+        self.EPSILON = 0.01
         self.image_subscriber_ = self.create_subscription(Image,"image_topic2",self.image_callback,
+        qos_profile_sensor_data)
+
+        self.target_move_publisher_ = self.create_publisher(Twist,
+        "/target_move",
         qos_profile_sensor_data)
 
         self.get_logger().info("Commander Node initialized")
@@ -61,9 +73,46 @@ class CommanderNode(Node):
             cv_image =self.bridge.imgmsg_to_cv2(msg,"bgr8")
         except CvBridgeError as e:
             print(e)
-        self.get_logger().info("Image msg recieved")
-        cv2.imshow("Image Window", cv_image)
-        cv2.waitKey(3)
+        cv_image_flipped = cv2.flip(cv_image,1)
+        frame_rgb = cv2.cvtColor(cv_image_flipped ,cv2.COLOR_BGR2RGB)
+        res = self.hands.process(frame_rgb)
+
+        if res.multi_hand_landmarks:
+            for handLms in res.multi_hand_landmarks:
+                for id, lm in enumerate(handLms.landmark):
+                    h,w,c = cv_image_flipped.shape
+                    cx,cy = int(lm.x * w), int(lm.y * h)
+
+                    if id == 8:
+                        cv2.circle(cv_image_flipped , (cx, cy), 10, (255,0,255), cv2.FILLED)
+
+                        #self.get_logger().info("index: " + str(cx) + " : " + str(cy))
+                        
+                        #width is 640, height is 480
+                        self.get_logger().info("pic dimensions: " + str(w) + " : " + str(h))
+                        self.center_robot(cx)
+                self.mpDraw.draw_landmarks(cv_image_flipped ,handLms,self.mpHands.HAND_CONNECTIONS)
+        cv2.imshow("Image Window", cv_image_flipped )
+        cv2.waitKey(1)
+
+
+        
+    def center_robot(self,x):
+        move = Twist()
+
+        if x < self.IMAGE_CENTER:
+            move.angular.z = -1
+            
+        if x > self.IMAGE_CENTER:
+            move.angular.z = 1
+
+        else:
+            pass
+        self.target_move_publisher_.publish(move)
+        
+
+
+
 
     def listener_callback(self,msg: SignalValues):
         #do pre-condition stuff before eval
