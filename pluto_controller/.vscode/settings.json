@@ -1,0 +1,12 @@
+{
+    "python.autoComplete.extraPaths": [
+        "/home/griffin/ros2_ws/install/pluto_controller/lib/python3.8/site-packages",
+        "/home/griffin/ros2_ws/install/pluto_interfaces/lib/python3.8/site-packages",
+        "/opt/ros/galactic/lib/python3.8/site-packages"
+    ],
+    "python.analysis.extraPaths": [
+        "/home/griffin/ros2_ws/install/pluto_controller/lib/python3.8/site-packages",
+        "/home/griffin/ros2_ws/install/pluto_interfaces/lib/python3.8/site-packages",
+        "/opt/ros/galactic/lib/python3.8/site-packages"
+    ]
+}
