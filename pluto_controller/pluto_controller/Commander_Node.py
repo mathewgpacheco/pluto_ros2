@@ -46,13 +46,13 @@ class CommanderNode(Node):
         if msg.detection_method == "bumpers":
             for signal in msg.bumper_signals.detections:
                 if signal.header.frame_id == "bump_left":
-                    self.get_logger().info("LEFT BUMPER at tStamp: " + msg.bumper_signals.header.stamp)
+                    self.get_logger().info("LEFT BUMPER at tStamp: " + str(msg.bumper_signals.header.stamp))
                 if signal.header.frame_id  == "bump_front_left":
-                    self.get_logger().info("LEFT FRONT BUMPER at tStamp: " + msg.bumper_signals.header.stamp)
+                    self.get_logger().info("LEFT FRONT BUMPER at tStamp: " + str(msg.bumper_signals.header.stamp))
                 if signal.header.frame_id == "bump_right":
-                    self.get_logger().info("RIGHT BUMPER at tStamp: " + msg.bumper_signals.header.stamp)
+                    self.get_logger().info("RIGHT BUMPER at tStamp: " + str(msg.bumper_signals.header.stamp))
                 if signal.header.frame_id  == "bump_front_right":
-                    self.get_logger().info("RIGHT FRONT BUMPER at tStamp: " + msg.bumper_signals.header.stamp)
+                    self.get_logger().info("RIGHT FRONT BUMPER at tStamp: " + str(msg.bumper_signals.header.stamp))
 
 
 def main(args=None):
