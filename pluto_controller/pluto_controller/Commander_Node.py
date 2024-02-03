@@ -1,59 +1,56 @@
 #!/usr/bin/env python3
 import rclpy
 from rclpy.node import Node
-from pluto_interfaces.msg import TargetMove
-from pluto_interfaces.msg import SignalValues
-from irobot_create_msgs.msg import HazardDetectionVector
 from rclpy.qos import qos_profile_sensor_data
-from irobot_create_msgs.msg import WheelTicks
-from irobot_create_msgs.msg import WheelVels
 from geometry_msgs.msg import Twist
-from std_msgs.msg import String
 
+from pynput import keyboard
 
 from sensor_msgs.msg import Image
 
+map = {'1':'Manual','2':'Automatic','q':'Rotate left','s':'Backward','w':'Forward','e':'Rotate right'}
 class CommanderNode(Node):
     def __init__(self):
         super().__init__("Commander_Node")
-        
-        #Subscribe to recieve custom detector signals
-        self.detector_subscriber_ = self.create_subscription(SignalValues,
-        "/detect_signals",
-        self.signal_callback,
-        qos_profile_sensor_data)
 
-                
-        #test subscription 
-        self.test_publisher_ = self.create_publisher(String,
-        "topic",
-        10)
-        timer_period = 0.5
-        self.timer = self.create_timer(timer_period, self.timer_callback)
-        self.i = 0
+        self.move_publisher= self.create_publisher(Twist,"/input_move",qos_profile_sensor_data)
+        self.currentMode = '1'
+        self.keyboard = keyboard
+        self.listener = self.keyboard.Listener(on_press=self.on_press,on_release=self.on_release)
+        self.listener.start()
+        self.get_logger().info("Commander Node initialized. Current mode: " + map[self.currentMode])
 
-        self.get_logger().info("Commander Node initialized")
- 
-    def timer_callback(self):
-        msg = String()
-        msg.data = 'Hello World : %d' % self.i
-        self.test_publisher_.publish(msg)
-        self.get_logger().info("publishing: " + msg.data)
-        self.i +=1
 
-    def signal_callback(self,msg: SignalValues):
 
-        if msg.detection_method == "bumpers":
-            for signal in msg.bumper_signals.detections:
-                if signal.header.frame_id == "bump_left":
-                    self.get_logger().info("LEFT BUMPER at tStamp: " + str(msg.bumper_signals.header.stamp))
-                if signal.header.frame_id  == "bump_front_left":
-                    self.get_logger().info("LEFT FRONT BUMPER at tStamp: " + str(msg.bumper_signals.header.stamp))
-                if signal.header.frame_id == "bump_right":
-                    self.get_logger().info("RIGHT BUMPER at tStamp: " + str(msg.bumper_signals.header.stamp))
-                if signal.header.frame_id  == "bump_front_right":
-                    self.get_logger().info("RIGHT FRONT BUMPER at tStamp: " + str(msg.bumper_signals.header.stamp))
+    def on_press(self,key):
+        #msg = TargetMove()
+        action = Twist()
+        next_move = False
+        try:
+            if key.char in map.keys() and self.currentMode == '1':
+                next_move = True
+                key = key.char
+                if key == 'w':
+                    action.linear.x = 2.0
+                    action.linear.z = 1.0
 
+                elif key =='s':
+                    action.linear.x = -1.0
+                elif key =='q':
+                    pass
+                elif key =='e':
+                    pass
+            else:
+                action.linear.x = 0.0
+        except AttributeError:
+            print('key {0} was pressed.'.format(key))
+        if next_move==True:
+                self.move_publisher.publish(action)
+                self.get_logger().info("Published a command: "+str(action))
+       
+    def on_release(self,key):
+        pass
+        #print('key {0} was released.'.format(key))
 
 def main(args=None):
     rclpy.init(args=args)
@@ -61,6 +58,7 @@ def main(args=None):
 
     try:
         rclpy.spin(node)
+ 
     except KeyboardInterrupt:
         pass
     
