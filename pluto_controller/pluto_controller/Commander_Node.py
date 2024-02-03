@@ -5,7 +5,7 @@ from rclpy.qos import qos_profile_sensor_data
 from geometry_msgs.msg import Twist
 
 from pynput import keyboard
-
+from std_msgs.msg import String
 from sensor_msgs.msg import Image
 
 map = {'1':'Manual','2':'Automatic','q':'Rotate left','s':'Backward','w':'Forward','e':'Rotate right'}
@@ -14,11 +14,13 @@ class CommanderNode(Node):
         super().__init__("Commander_Node")
 
         self.move_publisher= self.create_publisher(Twist,"/input_move",qos_profile_sensor_data)
+
         self.currentMode = '1'
         self.keyboard = keyboard
         self.listener = self.keyboard.Listener(on_press=self.on_press,on_release=self.on_release)
         self.listener.start()
         self.get_logger().info("Commander Node initialized. Current mode: " + map[self.currentMode])
+
 
 
 
@@ -31,15 +33,15 @@ class CommanderNode(Node):
                 next_move = True
                 key = key.char
                 if key == 'w':
-                    action.linear.x = 2.0
+                    action.linear.x = 1.0
                     action.linear.z = 1.0
 
                 elif key =='s':
                     action.linear.x = -1.0
                 elif key =='q':
-                    pass
+                    action.angular.z=1.0
                 elif key =='e':
-                    pass
+                    action.angular.z=-1.0
             else:
                 action.linear.x = 0.0
         except AttributeError:
